@@ -1,14 +1,18 @@
+import * as prism from "prismjs";
 import { TextDocument, TextDocumentContentChangeEvent, TextEditorSelectionChangeEvent, window } from "vscode";
 import DocumentDecoration from "./documentDecoration";
 import Settings from "./settings";
 
 export default class DocumentDecorationManager {
+    // Without require("prism-languages") prismJS will stop working
+    private readonly prismLanguages = require("prism-languages");
+    private readonly prismLoader = require("prismjs-components-loader");
     private readonly supportedLanguages: Set<string>;
     private showError = true;
     private documents = new Map<string, DocumentDecoration>();
 
-    constructor(supportedLanguages: Set<string>) {
-        this.supportedLanguages = supportedLanguages;
+    constructor() {
+        this.supportedLanguages = new Set(Object.keys(this.prismLanguages));
     }
 
     public reset() {
@@ -69,7 +73,10 @@ export default class DocumentDecorationManager {
             try {
                 const languageID = this.getPrismLanguageID(document.languageId);
                 if (!this.supportedLanguages.has(languageID)) {
-                    return;
+                    this.tryToLoadExternalFile(languageID);
+                    if (!this.supportedLanguages.has(languageID)) {
+                        return;
+                    }
                 }
 
                 const settings = new Settings(languageID, document.uri);
@@ -92,6 +99,17 @@ export default class DocumentDecorationManager {
         }
 
         return documentDecorations;
+    }
+
+    private tryToLoadExternalFile(languageId: string) {
+        let component: any;
+        switch (languageId) {
+            case "vue": component = require("vue-prism-component\\dist\\vue-prism-component");
+                break;
+            default: return;
+        }
+        component(prism);
+        this.supportedLanguages.add(languageId);
     }
 
     private getPrismLanguageID(languageID: string) {

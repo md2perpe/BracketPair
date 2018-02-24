@@ -138,6 +138,8 @@
     "license": "SEE LICENSE IN LICENSE.md",
     "dependencies": {
         "prism-languages": "^0.4.0",
-        "prismjs": "^1.11.0"
+        "prismjs": "^1.11.0",
+        "prismjs-components-loader": "^2.0.0",
+        "vue-prism-component": "^1.0.1"
     }
 }
