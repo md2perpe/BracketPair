@@ -19,17 +19,10 @@ export function activate(context: ExtensionContext) {
             documentDecorationManager.onDidChangeTextDocument(event.document, event.contentChanges);
         }),
 
-        workspace.onDidCloseTextDocument((event) => {
-            documentDecorationManager.onDidCloseTextDocument(event);
-        }),
-
-        workspace.onDidOpenTextDocument((event) => {
-            documentDecorationManager.onDidOpenTextDocument(event);
-        }),
-
-        window.onDidChangeTextEditorSelection((event) => {
-            documentDecorationManager.onDidChangeSelection(event);
-        }),
+        workspace.onDidCloseTextDocument(documentDecorationManager.onDidCloseTextDocument),
+        workspace.onDidOpenTextDocument(documentDecorationManager.onDidOpenTextDocument),
+        
+        window.onDidChangeTextEditorSelection(documentDecorationManager.onDidChangeSelection),
         
     );
 
